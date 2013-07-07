@@ -11,6 +11,10 @@ class Config {
     //Site Misc Configuration
     public $site_title = "mpakaloteftero";
     public $site_admin = "ahughes@ahughes.org";
+    
+    //The header image must be 1000 x 127. If you want it to be other size,
+    //you will have to fix the header code.
+    public $header_img = "header.jpg";
 
 }
 

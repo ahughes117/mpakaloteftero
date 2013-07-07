@@ -40,7 +40,7 @@ function authenticate($email, $password) {
         if (!$stmt)
             throw new Exception();
 
-        $stmt->bind_param("ss", $email, $password);
+        $stmt->bind_param("ss", $email, hash("sha256", $password));
         $stmt->execute();
 
         $res = $stmt->get_result();

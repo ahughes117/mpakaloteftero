@@ -20,7 +20,10 @@ $config = new Config();
     </head>
     <body>
         <?php
-        print_expenses();
+        if (!isset($_GET['expenseID']))
+            print_expenses();
+        else
+            print_expense($_GET['expenseID']);
         ?>
     </body>
 </html>
@@ -29,6 +32,11 @@ $config = new Config();
 function print_expenses() {
     $expenses = fetch_expenses("DESC", 0, 25);
     foreach ($expenses as $e)
-        echo "<p>{e->expenseID}";
+        echo "<p>{$e->expenseID}";
+}
+
+function print_expense($expenseID) {
+    $expense = fetch_expense($expenseID);
+    echo "<p>{$expense->expenseID}</p>";
 }
 ?>
