@@ -86,7 +86,7 @@ function fetch_user($userID) {
         $res = $stmt->get_result();
         while ($row = $res->fetch_array(MYSQLI_ASSOC))
             $user = row_to_user_object($row);
-        
+
         //housekeeping and returning
         $stmt->close();
         return $user;
@@ -116,6 +116,43 @@ function row_to_user_object($row) {
     $user->date_modified = $row['_dateModified'];
 
     return $user;
+}
+
+/**
+ * Logs a user's last ip and last timestamp
+ *  
+ * @global type $con
+ * @param type $userID
+ * @param type $ip
+ * @return boolean
+ * @throws Exception
+ */
+function ip_logger($userID, $ip) {
+    global $con;
+    $query = "
+        UPDATE user 
+        SET LastIp = ?, LastLogin = CURRENT_TIMESTAMP 
+        WHERE userID = ? ";
+
+    try {
+        $stmt = $con->prepare_statement($query);
+
+        //checking if query well written
+        if (!$stmt)
+            throw new Exception();
+
+        $stmt->bind_param("si", $ip, $userID);
+        $stmt->execute();
+
+        if ($stmt->affected_rows != 1)
+            throw new Exception();
+
+        //housekeeping and returning
+        $stmt->close();
+        return true;
+    } catch (Exception $x) {
+        return false;
+    }
 }
 
 ?>
