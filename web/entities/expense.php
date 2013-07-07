@@ -1,10 +1,12 @@
 <?php
 
-require_once('mysql.php');
+require_once(dirname(__FILE__) . '/../mysql.php');
 
 class Expense {
 
     public $expenseID;
+    public $debiter;
+    public $crediter;
     public $name;
     public $desc;
     public $price;
@@ -68,11 +70,11 @@ function fetch_expenses($order, $start, $finish) {
  * @return boolean
  * @throws Exception
  */
-function mark_paid($expenseID) {
+function mark_paid_request($expenseID) {
     global $con;
     $query = "
         UPDATE expense 
-        SET Paid = 1 
+        SET PaidRequest = 1 
         WHERE expenseID = ? ";
 
     try {
@@ -123,9 +125,9 @@ function fetch_expense($expenseID) {
 
         $res = $stmt->get_result();
         while ($row = $res->fetch_array(MYSQLI_ASSOC)) {
-            $expense = row_to_mysql($row);
+            $expense = row_to_expense_object($row);
         }
-        if(!isset($expense))
+        if (!isset($expense))
             throw new Exception();
         else {
             //housekeeping and returning
@@ -143,7 +145,7 @@ function fetch_expense($expenseID) {
  * @param type $row
  * @return \Expense
  */
-function row_to_mysql($row) {
+function row_to_expense_object($row) {
     $expense = new Expense();
 
     $expense->expenseID = $row['expenseID'];

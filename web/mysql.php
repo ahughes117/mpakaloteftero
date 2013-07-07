@@ -18,7 +18,7 @@ class MySQL {
 
     public function MySQL() {
         $this->config = new Config();
-        $this->mysqli = new mysqli($this->config->db_host, $this->config->db_user,
+        $this->mysqli = new mysqli($this->config->db_url, $this->config->db_user,
                         $this->config->db_pass, $this->config->db_schema);
     }
 

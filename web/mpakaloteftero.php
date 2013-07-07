@@ -1,4 +1,10 @@
 <?php
+session_start();
+
+//preventing unauthorised access
+if(!isset($_SESSION['userID']))
+    header('Location: index.php');
+
 ?>
 <!DOCTYPE html>
 <html>
