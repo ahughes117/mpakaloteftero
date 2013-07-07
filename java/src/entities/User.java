@@ -44,7 +44,6 @@ public class User {
      * 
      * @param userID
      * @param email
-     * @param password
      * @param name
      * @param surname
      * @param type
@@ -53,10 +52,9 @@ public class User {
      * @param lastIp
      * @param dateModified 
      */
-    public User(int userID, String email, String password, String name, String surname, String type, Timestamp dateCreated, Timestamp lastLogin, String lastIp, Timestamp dateModified) {
+    public User(int userID, String email, String name, String surname, String type, Timestamp dateCreated, Timestamp lastLogin, String lastIp, Timestamp dateModified) {
         this.userID = userID;
         this.email = email;
-        this.password = password;
         this.name = name;
         this.surname = surname;
         this.type = type;

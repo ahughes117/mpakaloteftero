@@ -1,5 +1,6 @@
 package util;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -42,12 +43,38 @@ public class StrVal {
         //regular expression that only allows alphanumerics and whitespace
         String alias = aTitle.replaceAll("[^a-zA-Z0-9 ]+", "");
         alias = alias.replaceAll(" ", "-");
-        
+
         if (alias.length() >= 255) {
             alias = alias.substring(0, 255);
         }
 
         return alias;
+    }
+
+    /**
+     * Converts a String into a valid sha256 hash
+     * 
+     * @param base
+     * @return 
+     */
+    public static String sha256(String base) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(base.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**

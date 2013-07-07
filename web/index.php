@@ -10,7 +10,7 @@ $config = new Config();
         <title><?php echo "{$config->site_title}"; ?></title>
     </head>
     <body class="fd_content">
-        <p><img src="<?php echo $config->header_img ?>" class="fd_img_center" width='1000' height='127'/></p>
+        <p><a href='.'><img src="<?php echo $config->header_img ?>" class="fd_img_center" width='1000' height='127'/></a></p>
 
         <form name="fr_login" id="fr_login" action="login.php" method="post" onsubmit="return submitCheck(this, this.id);">
             <fieldset class="nmFdetails">

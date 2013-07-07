@@ -12,8 +12,9 @@ USE `mpakaloteftero` ;
 DROP TABLE IF EXISTS `user` ;
 
 CREATE  TABLE IF NOT EXISTS `user` (
-  `userID` BIGINT NOT NULL ,
+  `userID` BIGINT NOT NULL AUTO_INCREMENT ,
   `Email` VARCHAR(255) NOT NULL ,
+  `Password` VARCHAR(600) NOT NULL ,
   `Name` VARCHAR(45) NOT NULL ,
   `Surname` VARCHAR(45) NOT NULL ,
   `Type` TINYINT NOT NULL DEFAULT 0 ,
@@ -32,7 +33,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `expense` ;
 
 CREATE  TABLE IF NOT EXISTS `expense` (
-  `expenseID` BIGINT NOT NULL ,
+  `expenseID` BIGINT NOT NULL AUTO_INCREMENT ,
   `debiterID` BIGINT NOT NULL ,
   `crediterID` BIGINT NOT NULL ,
   `Name` VARCHAR(45) NOT NULL ,
