@@ -1,10 +1,10 @@
 
-package updater;
+package entities;
 
 /**
- * Class ExpenseDL
+ * Class UserDL
  * @author Alex Hughes <alexhughes117@gmail.com>
  */
-public class ExpenseDL {
+public class UserDL {
 
 }

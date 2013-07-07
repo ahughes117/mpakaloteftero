@@ -1,5 +1,5 @@
 
-package updater;
+package entities;
 
 /**
  * 
