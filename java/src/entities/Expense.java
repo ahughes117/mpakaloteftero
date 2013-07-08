@@ -1,22 +1,21 @@
-
 package entities;
 
 import java.sql.Timestamp;
 
 /**
- * Class Expense
- * The entity class for the expense
- * 
+ * Class Expense The entity class for the expense
+ *
  * @author Alex Hughes <alexhughes117@gmail.com>
  */
 public class Expense {
-    
-    private int expenseID;
-    private int debiterID;
-    private int crediterID;
+
+    public static final int NIL = -1;
+    private int expenseID = NIL;
+    private int debiterID = NIL;
+    private int crediterID = NIL;
     private String name;
     private String desc;
-    private double price;
+    private double price = (double) NIL;
     private boolean paid;
     private boolean paidRequest;
     private Timestamp dateCreated;
@@ -24,12 +23,12 @@ public class Expense {
 
     /**
      * Constructor for inserting new expenses in the database
-     * 
+     *
      * @param debiterID
      * @param crediterID
      * @param name
      * @param desc
-     * @param price 
+     * @param price
      */
     public Expense(int debiterID, int crediterID, String name, String desc, double price) {
         this.debiterID = debiterID;
@@ -41,7 +40,7 @@ public class Expense {
 
     /**
      * Full Constructor for fetching expenses from the database
-     * 
+     *
      * @param expenseID
      * @param debiterID
      * @param crediterID
@@ -51,7 +50,7 @@ public class Expense {
      * @param paid
      * @param paidRequest
      * @param dateCreated
-     * @param dateModified 
+     * @param dateModified
      */
     public Expense(int expenseID, int debiterID, int crediterID, String name, String desc, double price, boolean paid, boolean paidRequest, Timestamp dateCreated, Timestamp dateModified) {
         this.expenseID = expenseID;

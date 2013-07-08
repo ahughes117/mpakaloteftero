@@ -49,7 +49,6 @@ public class UserDL {
      * @throws SQLException
      */
     public ArrayList<User> fetchUsers() throws SQLException {
-        users = new ArrayList();
         String query = ""
                 + "SELECT * "
                 + "FROM user ";

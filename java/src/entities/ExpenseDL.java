@@ -43,6 +43,67 @@ public class ExpenseDL {
     }
 
     /**
+     * Searches the expenses based on multiple parameters. It does not make use
+     * of prepared statements because it would be a pain in the ass. Try to do
+     * some minimal validation of strings before this layer to avoid unexpected
+     * behavior.
+     *
+     * There is no fear of SQL injection, as the user is already authorised with
+     * FULL credentials to the database.
+     *
+     * @return
+     * @throws SQLException
+     */
+    public ArrayList<Expense> searchExpenses() throws SQLException {
+        String query = ""
+                + "SELECT * "
+                + "FROM expense "
+                + "WHERE 1=1 ";
+
+        if (e.getDebiterID() != e.NIL) {
+            query += " AND debiterID = " + e.getDebiterID();
+        }
+
+        if (e.getCrediterID() != e.NIL) {
+            query += " AND crediterID = " + e.getCrediterID();
+        }
+
+        if (e.getName() != null || !e.getName().equals("")) {
+            query += " AND Name LIKE '%" + e.getName() + "%' ";
+        }
+
+        if (e.getDesc() != null || !e.getDesc().equals("")) {
+            query += " AND Description LIKE '%" + e.getDesc() + "%' ";
+        }
+
+        //yes, price is checked "slack-style"
+        if (e.getPrice() != e.NIL) {
+            double ceiling = e.getPrice() + 20;
+            double floor = e.getPrice() - 20;
+            query += " AND (Price <= " + ceiling + " OR Price >= " + floor + ") ";
+        }
+
+        if (e.isPaid()) {
+            query += " AND Paid = 1 ";
+        } else {
+            query += " AND Paid = 0 ";
+        }
+
+        if (e.isPaidRequest()) {
+            query += " AND PaidRequest = 1 ";
+        } else {
+            query += " AND PaidRequest = 0 ";
+        }
+
+        //this is lame, need to figure out a way to do it like the price but it's late.
+        if (e.getDateCreated() != null) {
+            query += " AND DateCreated = '" + e.getDateCreated().toString() + "' ";
+        }
+
+        return expenses;
+    }
+
+    /**
      * Helper function that converts an Expense ResultSet to an Expense
      * ArrayList
      *
@@ -97,8 +158,8 @@ public class ExpenseDL {
 
     /**
      * Updates an expense in the database
-     * 
-     * @throws SQLException 
+     *
+     * @throws SQLException
      */
     public void updateExpense() throws SQLException {
         String query = ""
@@ -123,15 +184,15 @@ public class ExpenseDL {
 
     /**
      * Deletes an expense from the database
-     * 
-     * @throws SQLException 
+     *
+     * @throws SQLException
      */
     public void deleteExpense() throws SQLException {
         String query = ""
                 + "DELETE "
                 + "FROM expense "
                 + "WHERE expenseID = ? ";
-        
+
         PreparedStatement ps = c.prepareStatement(query);
         ps.setInt(1, e.getExpenseID());
         ps.executeUpdate();
