@@ -26,12 +26,14 @@ public class Expense {
      * Constructor for inserting new expenses in the database
      * 
      * @param debiterID
+     * @param crediterID
      * @param name
      * @param desc
      * @param price 
      */
-    public Expense(int debiterID, String name, String desc, double price) {
+    public Expense(int debiterID, int crediterID, String name, String desc, double price) {
         this.debiterID = debiterID;
+        this.crediterID = crediterID;
         this.name = name;
         this.desc = desc;
         this.price = price;

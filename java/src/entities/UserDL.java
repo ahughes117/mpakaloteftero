@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import util.StrVal;
 
 /**
- * Class UserDL This is the data layer class between the desktop application and
- * the database.
+ * Class UserDL. This is the data layer class between the desktop application
+ * and the database.
  *
  * @author Alex Hughes <alexhughes117@gmail.com>
  */
@@ -28,8 +28,6 @@ public class UserDL {
      * @throws SQLException
      */
     public User fetchUser() throws SQLException {
-        //initialising
-        u = null;
         String query = ""
                 + "SELECT * "
                 + "FROM user "
@@ -51,7 +49,6 @@ public class UserDL {
      * @throws SQLException
      */
     public ArrayList<User> fetchUsers() throws SQLException {
-        //initialising
         users = new ArrayList();
         String query = ""
                 + "SELECT * "
@@ -71,10 +68,11 @@ public class UserDL {
      */
     public void insertUser() throws SQLException {
         String query = ""
-                + "INSERT INTO user (Email, Password, Name, Surname, Type) VALUES "
-                + "(?, ?, ?, ?, ?) ";
+                + "INSERT INTO user (Email, Password, Name, Surname, Type, DateCreated) VALUES "
+                + "(?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ";
 
         PreparedStatement ps = c.prepareStatement(query);
+        
         ps.setString(1, u.getEmail());
         ps.setString(2, StrVal.sha256(u.getPassword()));
         ps.setString(3, u.getName());
@@ -90,8 +88,8 @@ public class UserDL {
 
     /**
      * Updates a user's details
-     * 
-     * @throws SQLException 
+     *
+     * @throws SQLException
      */
     public void updateUser() throws SQLException {
         String query = ""
@@ -110,7 +108,7 @@ public class UserDL {
         } else if (u.getType().equals("user")) {
             ps.setInt(5, 0);
         }
-        
+
         ps.setInt(6, u.getUserID());
         ps.executeUpdate();
     }
@@ -148,4 +146,10 @@ public class UserDL {
     public void setU(User u) {
         this.u = u;
     }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+    
+    
 }

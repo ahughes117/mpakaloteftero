@@ -53,9 +53,9 @@ public class StrVal {
 
     /**
      * Converts a String into a valid sha256 hash
-     * 
+     *
      * @param base
-     * @return 
+     * @return
      */
     public static String sha256(String base) {
         try {
@@ -135,5 +135,33 @@ public class StrVal {
         date = day + "/" + month + "/" + year;
 
         return date;
+    }
+
+    /**
+     * Tiny helper function
+     *
+     * @param anInt
+     * @return
+     */
+    public static boolean intToBool(int anInt) {
+        if (anInt == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Tiny helper function
+     * 
+     * @param aValue
+     * @return 
+     */
+    public static int boolToInt(boolean aValue) {
+        if (aValue) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

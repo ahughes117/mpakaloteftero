@@ -38,7 +38,7 @@ CREATE  TABLE IF NOT EXISTS `expense` (
   `crediterID` BIGINT NOT NULL ,
   `Name` VARCHAR(45) NOT NULL ,
   `Description` TEXT NULL ,
-  `Price` DECIMAL(18,2) NULL ,
+  `Price` DECIMAL(18,2) NOT NULL ,
   `Paid` TINYINT NOT NULL DEFAULT 0 ,
   `PaidRequest` TINYINT NOT NULL DEFAULT 0 ,
   `DateCreated` TIMESTAMP NULL ,
