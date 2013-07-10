@@ -111,7 +111,7 @@ public class ExpenseDL {
      * @return
      * @throws SQLException
      */
-    public ArrayList<Expense> resultSetToExpenses(ResultSet expenseR) throws SQLException {
+    private ArrayList<Expense> resultSetToExpenses(ResultSet expenseR) throws SQLException {
         ArrayList<Expense> expenseL = new ArrayList();
 
         while (expenseR.next()) {
