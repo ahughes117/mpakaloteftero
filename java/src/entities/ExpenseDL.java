@@ -95,9 +95,9 @@ public class ExpenseDL {
             query += " AND PaidRequest = 0 ";
         }
 
-        //this is lame, need to figure out a way to do it like the price but it's late.
+        //it searches all the expenses for a particular DAY (wildchar at the end)
         if (e.getDateCreated() != null) {
-            query += " AND DateCreated = '" + e.getDateCreated().toString() + "' ";
+            query += " AND DateCreated BETWEEN '" + e.getDateCreated() + "%' ";
         }
 
         return expenses;

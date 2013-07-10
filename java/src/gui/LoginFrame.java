@@ -36,7 +36,7 @@ public class LoginFrame extends GUI {
             loadCredentials();
         }
 
-        super.setFrameLocationCenter(this);
+        super.setFrameLocationCenter();
         this.setVisible(true);
     }
 

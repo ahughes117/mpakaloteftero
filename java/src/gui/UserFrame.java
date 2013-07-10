@@ -1,20 +1,60 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
+import sql.Connector;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import util.MesDial;
+
 /**
+ * The Frame for creating a new user and updating an existing one
  *
  * @author Alex Hughes <alexhughes117@gmail.com>
  */
 public class UserFrame extends GUI {
-
+    
     /**
-     * Creates new form UserFrame
+     * Constructor for UserFrame. If anID == null, then we are talking about a
+     * new user. Otherwise, we are talking for an existing one
+     *
+     * @param aPreviousFrame
+     * @param aConnector
+     * @param anID
      */
-    public UserFrame() {
+    public UserFrame(GUI aPreviousFrame, Connector aConnector, int anID) {
+        super(aPreviousFrame, aConnector, anID);
+
         initComponents();
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                shutdown();
+            }
+        });
+        if (existing) {
+            try {
+                loadUser();
+            } catch (SQLException ex) {
+                MesDial.conError(this);
+                Logger.getLogger(UserFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        super.setFrameLocationCenter();
+        this.setVisible(true);
+    }
+
+    private void loadUser() throws SQLException {
+        
+    }
+    
+    private void saveUser() throws SQLException {
+        
+    }
+    
+    public static boolean isInstanceAlive() {
+        return instanceAlive;
     }
 
     /**
@@ -41,8 +81,6 @@ public class UserFrame extends GUI {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }

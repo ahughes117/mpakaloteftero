@@ -4,6 +4,7 @@ package gui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import sql.Connector;
 
 /**
  * The abstract GUI class for the frames.
@@ -11,15 +12,46 @@ import java.awt.event.*;
  * @author Alex Hughes
  */
 public abstract class GUI extends JFrame {
+    
+    protected static boolean instanceAlive;
+    protected GUI pFrame;
+    protected Connector c;
+    protected int id;
+    protected static final int NIL = -1;
+    protected boolean existing;
+    
+    public GUI() {
+        
+    }
+    
+    public GUI(GUI aPreviousFrame, Connector aConnector, int anID) {
+        instanceAlive = true;
+        pFrame = aPreviousFrame;
+        c = aConnector;
+        id = anID;
+        
+        if (anID == this.NIL) {
+            existing = false;
+        } else {
+            existing = true;
+        }
+    }
+    
 
-    public void setFrameLocationCenter(JFrame aFrame) {
+    public void setFrameLocationCenter() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension windowSize = aFrame.getSize();
+        Dimension windowSize = this.getSize();
 
         int windowX = Math.max(0, (screenSize.width - windowSize.width) / 2);
         int windowY = Math.max(0, (screenSize.height - windowSize.height) / 2);
 
-        aFrame.setLocation(windowX, windowY);
+        this.setLocation(windowX, windowY);
+    }
+    
+    protected void shutdown() {
+        instanceAlive = false;
+        pFrame.setVisible(true);
+        this.dispose();
     }
     
  public void popupMenuField(JTextField aTf) {

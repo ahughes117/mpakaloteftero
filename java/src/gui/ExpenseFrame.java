@@ -1,6 +1,14 @@
 
 package gui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sql.Connector;
+import util.MesDial;
+
 /**
  *
  * @author Alex Hughes <alexhughes117@gmail.com>
@@ -10,8 +18,32 @@ public class ExpenseFrame extends GUI {
     /**
      * Creates new form ExpenseFrame
      */
-    public ExpenseFrame() {
+    public ExpenseFrame(GUI aPreviousFrame, Connector aConnector, int anID) {
+        super(aPreviousFrame, aConnector, anID);
+        
         initComponents();
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                shutdown();
+            }
+        });
+        
+        if(existing){
+            try {
+                loadExpense();
+            } catch (SQLException ex) {
+                MesDial.conError(this);
+                Logger.getLogger(ExpenseFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    private void loadExpense() throws SQLException {
+        
+    }
+    
+    private void saveExpense() throws SQLException {
+        
     }
 
     /**

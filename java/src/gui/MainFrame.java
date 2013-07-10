@@ -1,5 +1,12 @@
-
 package gui;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sql.Connector;
+import util.MesDial;
 
 /**
  *
@@ -7,11 +14,52 @@ package gui;
  */
 public class MainFrame extends GUI {
 
+    private GUI pFrame;
+    private Connector c;
+    private static boolean instanceAlive = false;
+
     /**
      * Creates new form MainFrame
      */
-    public MainFrame() {
+    public MainFrame(GUI aPreviousFrame, Connector aConnector) {
+        pFrame = aPreviousFrame;
+        c = aConnector;
+
         initComponents();
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                shutdown();
+            }
+        });
+        try {
+            loadUsers();
+        } catch (SQLException ex) {
+            MesDial.conError(this);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        super.setFrameLocationCenter();
+        this.setVisible(true);
+    }
+
+    public void loadUsers() throws SQLException {
+    
+    }
+    
+    public void loadExpenses(int aUserID) throws SQLException {
+        
+    }
+    
+    public void searchExpenses() throws SQLException {
+        
+    }
+    
+    public void loadUser() {
+        
+    }
+    
+    public void loadExpense() {
+        
     }
 
     /**
@@ -38,7 +86,6 @@ public class MainFrame extends GUI {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
