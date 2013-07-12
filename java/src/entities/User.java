@@ -63,6 +63,13 @@ public class User {
         this.lastIp = lastIp;
         this.dateModified = dateModified;
     }
+    
+    /**
+     * Empty Constructor
+     */
+    public User() {
+        
+    }
 
     public int getUserID() {
         return userID;

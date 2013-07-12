@@ -64,6 +64,13 @@ public class Expense {
         this.dateCreated = dateCreated;
         this.dateModified = dateModified;
     }
+    
+    /**
+     * Empty Constructor
+     */
+    public Expense() {
+        
+    }
 
     public int getExpenseID() {
         return expenseID;

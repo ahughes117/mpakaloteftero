@@ -1,12 +1,17 @@
 package gui;
 
+import entities.User;
+import entities.UserDL;
 import sql.Connector;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import util.MesDial;
+import util.StrVal;
 
 /**
  * The Frame for creating a new user and updating an existing one
@@ -14,7 +19,10 @@ import util.MesDial;
  * @author Alex Hughes <alexhughes117@gmail.com>
  */
 public class UserFrame extends GUI {
-    
+
+    private UserDL userDL;
+    private User u;
+
     /**
      * Constructor for UserFrame. If anID == null, then we are talking about a
      * new user. Otherwise, we are talking for an existing one
@@ -46,13 +54,84 @@ public class UserFrame extends GUI {
     }
 
     private void loadUser() throws SQLException {
-        
+
+        //creating container object and requesting data from data layer
+        u = new User();
+        u.setUserID(id);
+        userDL = new UserDL(c);
+        userDL.setU(u);
+
+        u = userDL.fetchUser();
+
+        //assigning values
+        idL.setText(Integer.toString(u.getUserID()));
+        lastLoginL.setText(u.getLastLogin().toString());
+        ipL.setText(u.getLastIp());
+
+        //moving to fields
+        emailF.setText(u.getEmail());
+        nameF.setText(u.getName());
+        surnameF.setText(u.getSurname());
+
+        //moving to radio buttons
+        if (u.getType().equals("admin")) {
+            adminRadio.setSelected(true);
+        } else if (u.getType().equals("user")) {
+            userRadio.setSelected(true);
+        }
+
+        //finally printing date modified
+        dateL.setText("Date Created: " + StrVal.formatTimestamp(u.getDateCreated()));
+
+        if (u.getDateModified() != null) {
+            dateL.setText(dateL.getText() + " || Date Modified: "
+                    + StrVal.formatTimestamp(u.getDateModified()));
+        }
+
     }
-    
+
     private void saveUser() throws SQLException {
-        
+        //parsing, if non-existent inserting, if existent updating
+        if (parseFields()) {
+            userDL.setU(u);
+            if (!existing) {
+                userDL.insertUser();
+                existing = true;
+            } else {
+                userDL.updateUser();
+            }
+        } else {
+            MesDial.addressError(this);
+        }
     }
-    
+
+    private boolean parseFields() {
+        boolean successful = true;
+
+        u = new User();
+
+        try {
+            InternetAddress ia = new InternetAddress(emailF.getText(), true);
+            u.setEmail(ia.getAddress());
+        } catch (AddressException ex) {
+            successful = false;
+            Logger.getLogger(UserFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        u.setPassword(new String(passwordF.getPassword()));
+        u.setName(nameF.getText());
+        u.setSurname(surnameF.getText());
+
+        //setting the type of the user
+        if (adminRadio.isSelected()) {
+            u.setType("admin");
+        } else if (userRadio.isSelected()) {
+            u.setType("user");
+        }
+
+        return successful;
+    }
+
     public static boolean isInstanceAlive() {
         return instanceAlive;
     }
@@ -89,8 +168,8 @@ public class UserFrame extends GUI {
         jPanel2 = new javax.swing.JPanel();
         dateL = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        okBtn = new javax.swing.JButton();
+        backBtn = new javax.swing.JButton();
 
         jLabel10.setText("null");
 
@@ -230,9 +309,9 @@ public class UserFrame extends GUI {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton1.setText("OK");
+        okBtn.setText("OK");
 
-        jButton2.setText("<Back");
+        backBtn.setText("<Back");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -240,9 +319,9 @@ public class UserFrame extends GUI {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(backBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -250,8 +329,8 @@ public class UserFrame extends GUI {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(okBtn)
+                    .addComponent(backBtn))
                 .addContainerGap())
         );
 
@@ -283,12 +362,11 @@ public class UserFrame extends GUI {
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton adminRadio;
+    private javax.swing.JButton backBtn;
     private javax.swing.JLabel dateL;
     private javax.swing.JTextField emailF;
     private javax.swing.JLabel idL;
     private javax.swing.JLabel ipL;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -303,6 +381,7 @@ public class UserFrame extends GUI {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lastLoginL;
     private javax.swing.JTextField nameF;
+    private javax.swing.JButton okBtn;
     private javax.swing.JPasswordField passwordF;
     private javax.swing.JTextField surnameF;
     private javax.swing.ButtonGroup typeGroup;

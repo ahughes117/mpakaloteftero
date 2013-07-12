@@ -71,7 +71,7 @@ public class UserDL {
                 + "(?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ";
 
         PreparedStatement ps = c.prepareStatement(query);
-        
+
         ps.setString(1, u.getEmail());
         ps.setString(2, StrVal.sha256(u.getPassword()));
         ps.setString(3, u.getName());
@@ -93,22 +93,32 @@ public class UserDL {
     public void updateUser() throws SQLException {
         String query = ""
                 + "UPDATE user "
-                + "SET Email = ?, Password = ?, Name = ?, Surname = ?, Type = ? "
-                + "WHERE userID = ? ";
+                + "SET Email = ?, Name = ?, Surname = ?, Type = ? ";
+
+        if (u.getPassword() != null && !u.getPassword().equals("")) {
+            query += ", Password = ? ";
+        }
+        query += "WHERE userID = ? ";
 
         PreparedStatement ps = c.prepareStatement(query);
         ps.setString(1, u.getEmail());
-        ps.setString(2, StrVal.sha256(u.getPassword()));
-        ps.setString(3, u.getName());
-        ps.setString(4, u.getSurname());
+        ps.setString(2, u.getName());
+        ps.setString(3, u.getSurname());
 
         if (u.getType().equals("admin")) {
-            ps.setInt(5, 1);
+            ps.setInt(4, 1);
         } else if (u.getType().equals("user")) {
-            ps.setInt(5, 0);
+            ps.setInt(4, 0);
         }
 
-        ps.setInt(6, u.getUserID());
+        if (u.getPassword() != null && !u.getPassword().equals("")) {
+            ps.setString(5, StrVal.sha256(u.getPassword()));
+            ps.setInt(6, u.getUserID());
+        } else {
+            ps.setInt(5, u.getUserID());
+        }
+
+
         ps.executeUpdate();
     }
 
@@ -149,6 +159,4 @@ public class UserDL {
     public ArrayList<User> getUsers() {
         return users;
     }
-    
-    
 }

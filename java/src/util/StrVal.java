@@ -1,8 +1,10 @@
 package util;
 
 import java.security.MessageDigest;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * String Utility Class. Various helper functions lie here.
@@ -120,21 +122,39 @@ public class StrVal {
         return hasDuplicates;
     }
 
-    public static String SqlStringToString(String aSqlDate) {
-        String date = "";
-        String day = null, month = null, year = null;
+    public static String formatTimestamp(Timestamp aTStamp) {
+        String formatted;
 
-        Scanner scanner = new Scanner(aSqlDate);
-        scanner.useDelimiter("-");
-
-        while (scanner.hasNext()) {
-            year = scanner.next();
-            month = scanner.next();
-            day = scanner.next();
+        if (aTStamp != null) {
+            formatted = new SimpleDateFormat("dd/MM/yyyy || HH:mm:ss").format(aTStamp);
+        } else {
+            formatted = null;
         }
-        date = day + "/" + month + "/" + year;
+        return formatted;
+    }
+    
+    public static String formatDate(java.sql.Date aDate) {
+        String formatted;
+        
+        if(aDate != null) {
+            formatted = new SimpleDateFormat("dd/MM/yyyy").format(aDate);
+        } else {
+            formatted = null;
+        }
+        return formatted;
+    }
 
-        return date;
+    /**
+     * Gets a user friendly date format and returns a date object
+     * 
+     * @param aDate
+     * @return
+     * @throws Exception 
+     */
+    public static Date dateParser(String aDate) throws Exception {
+        java.util.Date utilDate = new SimpleDateFormat("dd/MM/yyyy").parse(aDate);
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        return sqlDate;
     }
 
     /**

@@ -1,16 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
 import java.sql.*;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import sql.Connector;
-import util.StrVal;
 
 /**
+ * SQL ResultSet to JTable utility.
  *
  * @author Alex Hughes
  */
@@ -21,11 +16,20 @@ public class TableParser {
     private static Object[] rowData;
     private static String[] colNames;
 
-    public static void fillTable(String aQuery, JTable aTable, Connector aConnector) throws SQLException {
+    /**
+     * This function acquires a ResultSet object and a JTable object and fills
+     * the table with the ResultSet contents. Special attention is being given
+     * on Date Format.
+     *
+     * @param aResult
+     * @param aTable
+     * @throws SQLException
+     */
+    public static void fillTable(ResultSet aResult, JTable aTable) throws SQLException {
         ((DefaultTableModel) aTable.getModel()).setRowCount(0);
         ((DefaultTableModel) aTable.getModel()).setColumnCount(0);
 
-        ResultSet results = aConnector.sendQuery(aQuery);
+        ResultSet results = aResult;
         ResultSetMetaData metadata = results.getMetaData();
 
         cols = metadata.getColumnCount();
@@ -42,12 +46,13 @@ public class TableParser {
 
         while (results.next()) {
             for (int i = 0; i < cols; i++) {
-                if (metadata.getColumnName(i + 1).equalsIgnoreCase("DatePosted")) {
-                    rowData[i] = StrVal.SqlStringToString(results.getDate(i + 1).toString());
-                    rowData[i] += " || ";
-                    rowData[i] += results.getTime(i + 1).toString();
-                } else
-                rowData[i] = results.getString(i + 1);
+                if (metadata.getColumnName(i + 1).equals("DateCreated")
+                        || metadata.getColumnName(i + 1).equals("_dateModified")) {
+
+                    rowData[i] = StrVal.formatTimestamp(results.getTimestamp(i + 1));
+                } else {
+                    rowData[i] = results.getString(i + 1);
+                }
             }
             ((DefaultTableModel) aTable.getModel()).addRow(rowData);
         }
