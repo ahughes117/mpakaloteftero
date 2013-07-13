@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * String Utility Class. Various helper functions lie here.
@@ -155,6 +157,25 @@ public class StrVal {
         java.util.Date utilDate = new SimpleDateFormat("dd/MM/yyyy").parse(aDate);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         return sqlDate;
+    }
+    
+    /**
+     * Parses an integer from a String.
+     * 
+     * @param aString
+     * @return 
+     */
+    public static int parseIdFromString(String aString) {
+        int id = -1;
+        
+        Pattern intPattern = Pattern.compile("\\d++");
+        Matcher intMatcher = intPattern.matcher(aString);
+        
+        while(intMatcher.find()){
+            id = Integer.parseInt(intMatcher.group());
+        }
+        
+        return id;
     }
 
     /**
