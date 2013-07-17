@@ -1,6 +1,7 @@
-
 package gui;
 
+import entities.Expense;
+import entities.ExpenseDL;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
@@ -8,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import sql.Connector;
 import util.MesDial;
+import util.StrVal;
 
 /**
  *
@@ -15,20 +17,23 @@ import util.MesDial;
  */
 public class ExpenseFrame extends GUI {
 
+    private ExpenseDL expenseDL;
+    private Expense e;
+
     /**
      * Creates new form ExpenseFrame
      */
     public ExpenseFrame(GUI aPreviousFrame, Connector aConnector, int anID) {
         super(aPreviousFrame, aConnector, anID);
-        
+
         initComponents();
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 shutdown();
             }
         });
-        
-        if(existing){
+
+        if (existing) {
             try {
                 loadExpense();
             } catch (SQLException ex) {
@@ -37,13 +42,102 @@ public class ExpenseFrame extends GUI {
             }
         }
     }
-    
+
     private void loadExpense() throws SQLException {
-        
+
+        //creating container object and requesting data from data layer
+        e.setExpenseID(id);
+        expenseDL = new ExpenseDL(c);
+        expenseDL.setE(e);
+
+        e = expenseDL.fetchExpense();
+
+        //assigning values
+        idL.setText(idL.getText() + Integer.toString(e.getExpenseID()));
+        //TODO write combo code
+
+        //moving to fields
+        nameF.setText(e.getName());
+        priceF.setText(e.formatPrice());
+        descArea.setText(e.getDesc());
+
+        //moving to check boxes
+        if (e.isPaid()) {
+            paidChk.setSelected(true);
+        } else {
+            paidChk.setSelected(false);
+        }
+
+        if (e.isPaidRequest()) {
+            paidRequestChk.setSelected(true);
+        } else {
+            paidRequestChk.setSelected(false);
+        }
+
+        //finally printing dates
+        dateL.setText("Date Created: " + StrVal.formatTimestamp(e.getDateCreated())
+                + " || Date Modified: " + StrVal.formatTimestamp(e.getDateModified()));
+
+    }
+
+    private void saveExpense() throws SQLException {
+        //parsing, if non-existent inserting, if existent updating
+        expenseDL = new ExpenseDL(c);
+        if(parseFields()) {
+            expenseDL.setE(e);
+            if(!existing) {
+                expenseDL.insertExpense();
+                existing = true;
+            } else {
+                expenseDL.updateExpense();
+            } 
+        }
+    }
+
+    private boolean parseFields() {
+        boolean successful = true;
+
+        e = new Expense();
+
+        //surrounding with try and catch in order for the app not to blow because of casting
+        try {
+            if (debiterCombo.getSelectedIndex() != -1) {
+                e.setDebiterID(StrVal.parseIdFromString((String) debiterCombo.getSelectedItem()));
+            }
+            if (crediterCombo.getSelectedIndex() != -1) {
+                e.setCrediterID(StrVal.parseIdFromString((String) crediterCombo.getSelectedItem()));
+            }
+        } catch (Exception x) {
+            successful = false;
+        }
+
+        e.setName(nameF.getText());
+        e.setDesc(descArea.getText());
+
+        //surrounding with try and catch in order to validate doubles
+        try {
+            e.setPrice(Double.parseDouble(priceF.getText()));
+        } catch (Exception x) {
+            successful = false;
+        }
+
+        if (paidChk.isSelected()) {
+            e.setPaid(true);
+        } else {
+            e.setPaid(false);
+        }
+
+        if (paidRequestChk.isSelected()) {
+            e.setPaidRequest(true);
+        } else {
+            e.setPaidRequest(false);
+        }
+
+        return successful;
     }
     
-    private void saveExpense() throws SQLException {
-        
+    public static boolean isInstanceAlive() {
+        return instanceAlive;
     }
 
     /**
@@ -56,9 +150,9 @@ public class ExpenseFrame extends GUI {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        idL = new javax.swing.JLabel();
+        debiterL = new javax.swing.JLabel();
+        crediterL = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         paidChk = new javax.swing.JCheckBox();
@@ -67,9 +161,8 @@ public class ExpenseFrame extends GUI {
         priceF = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         descArea = new javax.swing.JTextArea();
-        expenseIDL = new javax.swing.JLabel();
-        debiterL = new javax.swing.JLabel();
-        crediterL = new javax.swing.JLabel();
+        debiterCombo = new javax.swing.JComboBox();
+        crediterCombo = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
         okBtn = new javax.swing.JButton();
         backBtn = new javax.swing.JButton();
@@ -81,11 +174,11 @@ public class ExpenseFrame extends GUI {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Expense"));
 
-        jLabel1.setText("expenseID:");
+        idL.setText("expenseID:");
 
-        jLabel2.setText("Debiter:");
+        debiterL.setText("Debiter:");
 
-        jLabel3.setText("Crediter:");
+        crediterL.setText("Crediter:");
 
         jLabel4.setText("Name:");
 
@@ -100,12 +193,6 @@ public class ExpenseFrame extends GUI {
         descArea.setColumns(20);
         descArea.setRows(5);
         jScrollPane1.setViewportView(descArea);
-
-        expenseIDL.setText("null");
-
-        debiterL.setText("null");
-
-        crediterL.setText("null");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -126,36 +213,33 @@ public class ExpenseFrame extends GUI {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(paidChk)
-                            .addComponent(paidRequestChk)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(expenseIDL)
-                                    .addComponent(debiterL)
-                                    .addComponent(crediterL))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(paidRequestChk))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(debiterL)
+                            .addComponent(idL)
+                            .addComponent(crediterL))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(debiterCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(crediterCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(expenseIDL))
+                .addComponent(idL)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(debiterL))
+                    .addComponent(debiterL)
+                    .addComponent(debiterCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(crediterL))
-                .addGap(18, 18, 18)
+                    .addComponent(crediterL)
+                    .addComponent(crediterCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(nameF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -164,7 +248,7 @@ public class ExpenseFrame extends GUI {
                     .addComponent(jLabel6)
                     .addComponent(priceF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paidChk)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -177,6 +261,11 @@ public class ExpenseFrame extends GUI {
         okBtn.setText("OK");
 
         backBtn.setText("<Back");
+        backBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -246,16 +335,19 @@ public class ExpenseFrame extends GUI {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
+        shutdown();
+    }//GEN-LAST:event_backBtnActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backBtn;
+    private javax.swing.JComboBox crediterCombo;
     private javax.swing.JLabel crediterL;
     private javax.swing.JLabel dateL;
+    private javax.swing.JComboBox debiterCombo;
     private javax.swing.JLabel debiterL;
     private javax.swing.JTextArea descArea;
-    private javax.swing.JLabel expenseIDL;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel idL;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;

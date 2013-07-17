@@ -56,7 +56,6 @@ public class UserFrame extends GUI {
     private void loadUser() throws SQLException {
 
         //creating container object and requesting data from data layer
-        u = new User();
         u.setUserID(id);
         userDL = new UserDL(c);
         userDL.setU(u);
@@ -64,9 +63,9 @@ public class UserFrame extends GUI {
         u = userDL.fetchUser();
 
         //assigning values
-        idL.setText(Integer.toString(u.getUserID()));
-        lastLoginL.setText(u.getLastLogin().toString());
-        ipL.setText(u.getLastIp());
+        idL.setText(idL.getText() + Integer.toString(u.getUserID()));
+        lastLoginL.setText(lastLoginL.getText() + u.getLastLogin().toString());
+        ipL.setText(ipL.getText() + u.getLastIp());
 
         //moving to fields
         emailF.setText(u.getEmail());
@@ -81,13 +80,9 @@ public class UserFrame extends GUI {
         }
 
         //finally printing date modified
-        dateL.setText("Date Created: " + StrVal.formatTimestamp(u.getDateCreated()));
-
-        if (u.getDateModified() != null) {
-            dateL.setText(dateL.getText() + " || Date Modified: "
-                    + StrVal.formatTimestamp(u.getDateModified()));
-        }
-
+        dateL.setText("Date Created: " + StrVal.formatTimestamp(u.getDateCreated())
+                + " || Date Modified: " + StrVal.formatTimestamp(u.getDateModified()));
+        
     }
 
     private void saveUser() throws SQLException {
@@ -101,21 +96,18 @@ public class UserFrame extends GUI {
             } else {
                 userDL.updateUser();
             }
-        } else {
-            MesDial.addressError(this);
-        }
+        } 
     }
 
     private boolean parseFields() {
         boolean successful = true;
-
-        u = new User();
 
         try {
             InternetAddress ia = new InternetAddress(emailF.getText(), true);
             u.setEmail(ia.getAddress());
         } catch (AddressException ex) {
             successful = false;
+            MesDial.addressError(this);
             Logger.getLogger(UserFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -149,18 +141,15 @@ public class UserFrame extends GUI {
         jLabel10 = new javax.swing.JLabel();
         typeGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         idL = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        adminRadio = new javax.swing.JRadioButton();
-        userRadio = new javax.swing.JRadioButton();
         lastLoginL = new javax.swing.JLabel();
         ipL = new javax.swing.JLabel();
+        adminRadio = new javax.swing.JRadioButton();
+        userRadio = new javax.swing.JRadioButton();
         emailF = new javax.swing.JTextField();
         nameF = new javax.swing.JTextField();
         surnameF = new javax.swing.JTextField();
@@ -172,16 +161,14 @@ public class UserFrame extends GUI {
         okBtn = new javax.swing.JButton();
         backBtn = new javax.swing.JButton();
 
-        jLabel10.setText("null");
+        jLabel10.setText(null);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("User");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("User"));
 
-        jLabel1.setText("ID:");
-
-        idL.setText("null");
+        idL.setText("ID:");
 
         jLabel3.setText("Email:");
 
@@ -191,19 +178,15 @@ public class UserFrame extends GUI {
 
         jLabel6.setText("Surname:");
 
-        jLabel7.setText("Last Login:");
+        lastLoginL.setText("Last Login:");
 
-        jLabel8.setText("Last IP:");
+        ipL.setText("Last IP:");
 
         typeGroup.add(adminRadio);
         adminRadio.setText("admin");
 
         typeGroup.add(userRadio);
         userRadio.setText("user");
-
-        lastLoginL.setText("null");
-
-        ipL.setText("null");
 
         jLabel12.setText("Type:");
 
@@ -215,54 +198,44 @@ public class UserFrame extends GUI {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(adminRadio)
-                        .addGap(18, 18, 18)
-                        .addComponent(userRadio))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lastLoginL)
-                            .addComponent(ipL)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(adminRadio)
+                                .addGap(18, 18, 18)
+                                .addComponent(userRadio))
+                            .addComponent(jLabel12)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(idL)
+                                .addComponent(ipL)
+                                .addComponent(lastLoginL)))
+                        .addGap(220, 220, 220))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(58, 58, 58)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(idL))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
-                        .addGap(30, 30, 30)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(emailF)
-                            .addComponent(passwordF)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(102, 102, 102)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(surnameF)
-                            .addComponent(nameF)))
-                    .addComponent(jLabel12))
-                .addContainerGap())
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6))
+                                .addGap(42, 42, 42)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(passwordF)
+                                    .addComponent(emailF)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(102, 102, 102)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(surnameF)
+                                    .addComponent(nameF))))
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(idL))
+                .addComponent(idL)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(lastLoginL))
+                .addComponent(lastLoginL)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(ipL))
+                .addComponent(ipL)
                 .addGap(24, 24, 24)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -331,7 +304,7 @@ public class UserFrame extends GUI {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(backBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -384,7 +357,6 @@ public class UserFrame extends GUI {
             Logger.getLogger(UserFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_okBtnActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton adminRadio;
     private javax.swing.JButton backBtn;
@@ -392,15 +364,12 @@ public class UserFrame extends GUI {
     private javax.swing.JTextField emailF;
     private javax.swing.JLabel idL;
     private javax.swing.JLabel ipL;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
