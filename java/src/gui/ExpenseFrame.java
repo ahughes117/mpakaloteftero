@@ -2,12 +2,14 @@ package gui;
 
 import entities.Expense;
 import entities.ExpenseDL;
+import entities.User;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sql.Connector;
+import util.Library;
 import util.MesDial;
 import util.StrVal;
 
@@ -33,13 +35,26 @@ public class ExpenseFrame extends GUI {
             }
         });
 
-        if (existing) {
-            try {
+        try {
+            loadUserCombo();
+            if (existing) {
                 loadExpense();
-            } catch (SQLException ex) {
-                MesDial.conError(this);
-                Logger.getLogger(ExpenseFrame.class.getName()).log(Level.SEVERE, null, ex);
+            } else {
+                e = new Expense();
             }
+        } catch (SQLException ex) {
+            MesDial.conError(this);
+            Logger.getLogger(ExpenseFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        super.setFrameLocationCenter();
+        this.setVisible(true);
+    }
+
+    private void loadUserCombo() throws SQLException {
+        for(User usr : Library.getUsers()) {
+            debiterCombo.addItem(usr.getUserID() + " - " + usr.getName() + " " + usr.getSurname());
+            crediterCombo.addItem(usr.getUserID() + " - " + usr.getName() + " " + usr.getSurname());
         }
     }
 
@@ -83,21 +98,19 @@ public class ExpenseFrame extends GUI {
     private void saveExpense() throws SQLException {
         //parsing, if non-existent inserting, if existent updating
         expenseDL = new ExpenseDL(c);
-        if(parseFields()) {
+        if (parseFields()) {
             expenseDL.setE(e);
-            if(!existing) {
+            if (!existing) {
                 expenseDL.insertExpense();
                 existing = true;
             } else {
                 expenseDL.updateExpense();
-            } 
+            }
         }
     }
 
     private boolean parseFields() {
         boolean successful = true;
-
-        e = new Expense();
 
         //surrounding with try and catch in order for the app not to blow because of casting
         try {
@@ -135,7 +148,7 @@ public class ExpenseFrame extends GUI {
 
         return successful;
     }
-    
+
     public static boolean isInstanceAlive() {
         return instanceAlive;
     }
@@ -338,7 +351,6 @@ public class ExpenseFrame extends GUI {
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         shutdown();
     }//GEN-LAST:event_backBtnActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backBtn;
     private javax.swing.JComboBox crediterCombo;

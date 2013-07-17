@@ -1,6 +1,7 @@
 package entities;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 /**
  * Class Expense The entity class for the expense
@@ -64,12 +65,20 @@ public class Expense {
         this.dateCreated = dateCreated;
         this.dateModified = dateModified;
     }
-    
+
     /**
      * Empty Constructor
      */
     public Expense() {
+    }
+
+    public String formatPrice() {
+        String priceS;
         
+        DecimalFormat df = new DecimalFormat("#.##");
+        priceS = df.format(price);
+        
+        return priceS;
     }
 
     public int getExpenseID() {

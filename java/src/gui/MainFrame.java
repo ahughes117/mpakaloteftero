@@ -1,11 +1,13 @@
 package gui;
 
+import entities.UserDL;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sql.Connector;
+import util.Library;
 import util.MesDial;
 
 /**
@@ -28,6 +30,7 @@ public class MainFrame extends GUI {
             }
         });
         try {
+            loadLib();
             loadUsers();
         } catch (SQLException ex) {
             MesDial.conError(this);
@@ -36,6 +39,10 @@ public class MainFrame extends GUI {
 
         super.setFrameLocationCenter();
         this.setVisible(true);
+    }
+    
+    public void loadLib() throws SQLException {
+        Library.fetchUsers(new UserDL(c));
     }
 
     public void loadUsers() throws SQLException {
@@ -111,12 +118,12 @@ public class MainFrame extends GUI {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(!UserFrame.isInstanceAlive())
+        //if(!UserFrame.isInstanceAlive())
             new UserFrame(this, c, UserFrame.NIL);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(!ExpenseFrame.isInstanceAlive())
+        //if(!ExpenseFrame.isInstanceAlive())
             new ExpenseFrame(this, c, ExpenseFrame.NIL);
     }//GEN-LAST:event_jButton2ActionPerformed
 

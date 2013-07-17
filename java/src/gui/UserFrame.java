@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import util.Library;
 import util.MesDial;
 import util.StrVal;
 
@@ -47,6 +48,8 @@ public class UserFrame extends GUI {
                 MesDial.conError(this);
                 Logger.getLogger(UserFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            u = new User();
         }
 
         super.setFrameLocationCenter();
@@ -82,7 +85,7 @@ public class UserFrame extends GUI {
         //finally printing date modified
         dateL.setText("Date Created: " + StrVal.formatTimestamp(u.getDateCreated())
                 + " || Date Modified: " + StrVal.formatTimestamp(u.getDateModified()));
-        
+
     }
 
     private void saveUser() throws SQLException {
@@ -96,7 +99,8 @@ public class UserFrame extends GUI {
             } else {
                 userDL.updateUser();
             }
-        } 
+            Library.fetchUsers(userDL);
+        }
     }
 
     private boolean parseFields() {
